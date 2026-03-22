@@ -10,7 +10,6 @@
     margin-bottom: 4rem;
 }
 
-/* СЕТКА ПО 5 В РЯД */
 .features {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -22,6 +21,7 @@
 }
 
 .feature-card {
+    height: 280px;                     /* фиксированная высота */
     background: var(--bg);
     border: 1px solid var(--border);
     padding: 1.2rem;
@@ -30,24 +30,34 @@
     box-shadow: var(--shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform; 
-    height: fit-content;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;        /* контент прижимается к верху */
     align-items: center;
     position: relative; 
 }
 
-.feature-icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    cursor: default;
-    user-select: none;
+.feature-image {
+  width: 80px;          
+  height: 80px;
+  /* margin-bottom: 0.8rem; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;     
+  border-radius: 8px;   
+  background-color: #f5f5f5; 
+}
+
+.feature-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    
 }
 
 .feature-card h3 {
     font-size: 1.1rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.4rem;  
     color: var(--text-h);
     cursor: default;
     user-select: none;
@@ -57,6 +67,11 @@
     font-size: 0.85rem;
     color: var(--text);
     line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;             
+    -webkit-box-orient: vertical;
+    margin: 0;                          /* убираем лишние отступы */
 }
 
 .feature-card:hover {
@@ -141,4 +156,155 @@
 }
 @media (max-width: 600px) {
     .features { grid-template-columns: 1fr; }
+}
+
+
+/* Кнопка добавления */
+.add-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-button:hover {
+  background: var(--accent-dark);
+}
+
+/* Форма для добавления/редактирования */
+.job-form {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.job-form h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--text-h);
+}
+
+.job-form input,
+.job-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.job-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.form-buttons button[type="submit"] {
+  background: var(--accent);
+  color: white;
+}
+
+.form-buttons button[type="button"] {
+  background: #ccc;
+  color: #333;
+}
+
+/* Кнопки на карточке */
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.card-actions button {
+  background: var(--accent);
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.card-actions button:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.edit-btn {
+  background-color: var(--bg);
+}
+
+.delete-btn {
+  color: #e74c3c;
+}
+
+
+/* Стили для загрузки файла */
+.file-input {
+  margin-bottom: 15px;
+}
+
+.file-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.file-input input[type="file"] {
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 100%;
+  background: var(--input-bg);
+}
+
+.file-input span {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+/* Превью */
+.preview {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.preview p {
+  margin: 0 0 5px;
+  font-weight: bold;
+}
+
+.preview img {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  object-fit: cover;
 }
