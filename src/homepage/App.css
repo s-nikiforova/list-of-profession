@@ -21,7 +21,7 @@
 }
 
 .feature-card {
-    height: 280px;                     /* фиксированная высота */
+    height: 280px;
     background: var(--bg);
     border: 1px solid var(--border);
     padding: 1.2rem;
@@ -32,7 +32,7 @@
     will-change: transform; 
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;        /* контент прижимается к верху */
+    justify-content: flex-start;
     align-items: center;
     position: relative; 
 }
@@ -71,7 +71,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 4;             
     -webkit-box-orient: vertical;
-    margin: 0;                          /* убираем лишние отступы */
+    margin: 0; 
 }
 
 .feature-card:hover {
@@ -177,7 +177,6 @@
   background: var(--accent-dark);
 }
 
-/* Форма для добавления/редактирования */
 .job-form {
   max-width: 500px;
   margin: 20px auto;
@@ -235,7 +234,6 @@
   color: #333;
 }
 
-/* Кнопки на карточке */
 .card-actions {
   display: flex;
   justify-content: center;
@@ -257,16 +255,6 @@
   background: rgba(0,0,0,0.1);
 }
 
-.edit-btn {
-  background-color: var(--bg);
-}
-
-.delete-btn {
-  color: #e74c3c;
-}
-
-
-/* Стили для загрузки файла */
 .file-input {
   margin-bottom: 15px;
 }
@@ -292,7 +280,6 @@
   color: var(--text);
 }
 
-/* Превью */
 .preview {
   margin-bottom: 15px;
   text-align: center;
@@ -307,4 +294,61 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   object-fit: cover;
+}
+
+.card-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.edit-btn:hover {
+  background-color: #e0e7ff;
+  transform: translateY(-2px);
+}
+
+.delete-btn:hover {
+  background-color: #fecaca;
+  transform: translateY(-2px);
+}
+
+.logout-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay .job-form {
+  margin: 0;
+  width: 90%;
+  max-width: 500px;
 }

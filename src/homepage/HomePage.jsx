@@ -1,190 +1,221 @@
+// src/homepage/HomePage.jsx
 import React, { useState, useEffect } from 'react';
-import { getJobs, createJob, updateJob, deleteJob } from '../api.js';
-import { useNavigate } from 'react-router-dom';
+import { fetchJobs, createJob, updateJob, deleteJob } from '../api/api';
+import { SECRET_KEY } from '../api/constants';
 import './App.css';
 
-
-function HomePage() {
-  const navigate = useNavigate();
-
-  const [professions, setProfessions] = useState([]);
+const HomePage = () => {
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '', image: '' });
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
-    const loadJobs = async () => {
-      try {
-        setLoading(true);
-        const data = await getJobs();   // ← вызываем функцию
-        setProfessions(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const stored = sessionStorage.getItem('isAdmin');
+    if (stored === 'true') setIsAdmin(true);
     loadJobs();
   }, []);
 
+  const loadJobs = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchJobs();
+      setJobs(data);
+    } catch {
+      setError('Ошибка загрузки');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleLogin = () => {
+    const key = prompt('Введите секретный ключ:');
+    if (key === SECRET_KEY) {
+      setIsAdmin(true);
+      sessionStorage.setItem('isAdmin', 'true');
+    } else if (key) alert('Неверный ключ');
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    sessionStorage.removeItem('isAdmin');
+  };
+
+  const openAddForm = () => {
+    setEditingJob(null);
+    setFormData({ name: '', description: '', image: '' });
+    setImagePreview('');
+    setShowForm(true);
+  };
+
+  const openEditForm = (job) => {
+    setEditingJob(job);
+    setFormData({
+      name: job.name,
+      description: job.description || '',
+      image: job.image || '',
+    });
+    setImagePreview(job.image || '');
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingJob(null);
+    setImagePreview('');
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setSelectedFile(file);
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Файл слишком большой (макс. 5 МБ)');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (event) => {
-      setFormData(prev => ({ ...prev, image: event.target.result }));
+      const base64 = event.target.result;
+      setFormData({ ...formData, image: base64 });
+      setImagePreview(base64);
     };
     reader.readAsDataURL(file);
   };
 
-  const resetForm = () => {
-    setFormData({ name: '', description: '', image: '' });
-    setEditingJob(null);
-    setSelectedFile(null);
-  };
-
-  const handleAddClick = () => resetForm();
-
-  const handleEditClick = (job, e) => {
-    e.stopPropagation();
-    setEditingJob(job);
-    setFormData({
-      name: job.name,
-      desc: job.description,
-      image: job.image || '' 
-    });
-    setSelectedFile(null);
-  };
-
-  const handleSave = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.desc.trim()) return alert('Заполните поля');
-
-    const jobData = {
-      name: formData.name,
-      desc: formData.desc,
-      image: formData.image || 'https://via.placeholder.com/150'
-    };
-
+    if (!formData.name.trim()) {
+      alert('Название обязательно');
+      return;
+    }
     try {
       if (editingJob) {
-        const updated = await updateJob(editingJob.id, jobData); // ← обновление
-        setProfessions(prev => prev.map(j => j.id === updated.id ? updated : j));
+        await updateJob(editingJob.id, {
+          name: formData.name,
+          description: formData.description || undefined,
+          image: formData.image || undefined,
+        }, SECRET_KEY);
       } else {
-        const created = await createJob(jobData); // ← создание
-        setProfessions(prev => [...prev, created]);
+        await createJob({
+          name: formData.name,
+          description: formData.description || undefined,
+          image: formData.image || undefined,
+        }, SECRET_KEY);
       }
-      resetForm();
-    } catch (err) {
-      alert(err.message);
+      await loadJobs();
+      closeForm();
+    } catch {
+      alert('Ошибка сохранения');
     }
   };
-        
 
-  const handleDelete = async (id, e) => {
-    e.stopPropagation();
-    if (!window.confirm('Точно удалить?')) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm('Удалить профессию?')) return;
     try {
-      await deleteJob(id); // ← удаление
-      setProfessions(prev => prev.filter(j => j.id !== id));
-    } catch (err) {
-      alert(err.message);
+      await deleteJob(id, SECRET_KEY);
+      await loadJobs();
+    } catch {
+      alert('Ошибка удаления');
     }
   };
 
   if (loading) return <div className="app-container">Загрузка...</div>;
-  if (error) return <div className="app-container">Ошибка: {error}</div>;
+  if (error) return <div className="app-container">{error}</div>;
 
   return (
     <div className="app-container">
       <header className="header">
-        <h1>Список <span>профессий</span></h1>
+        <h1>
+          <span onClick={handleLogin} style={{ cursor: 'pointer' }}>
+            Список профессий
+          </span>
+        </h1>
+        {isAdmin && (
+          <button className="logout-btn" onClick={handleLogout}>
+            Выйти
+          </button>
+        )}
       </header>
 
-      <main className="main-content">
-        <button className="add-button" onClick={handleAddClick}>
-          Добавить профессию
-        </button>
+      <div className="hero">
+        <h2>IT-профессии ({jobs.length})</h2>
+        {isAdmin && (
+          <button className="add-button" onClick={openAddForm}>
+            Добавить профессию
+          </button>
+        )}
+      </div>
 
-        {(editingJob !== null || formData.name || formData.description || formData.image || selectedFile) && (
-          <form className="job-form" onSubmit={handleSave}>
-            <h3>{editingJob ? 'Редактировать' : 'Добавить'} профессию</h3>
-
-            <input
-              type="text"
-              name="name"
-              placeholder="Название"
-              value={formData.name}
-              onChange={handleFormChange}
-              required
-            />
-
-            <textarea
-              name="description"
-              placeholder="Описание"
-              value={formData.description}
-              onChange={handleFormChange}
-              required
-            />
-
-            <div className="file-input">
-              <label>Изображение (выберите файл):</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              {selectedFile && <span>Выбран файл: {selectedFile.name}</span>}
+      <div className="features">
+        {jobs.map((job) => (
+          <div key={job.id} className="feature-card">
+            <div className="feature-image">
+              {job.image ? (
+                <img src={job.image} alt={job.name} />
+              ) : (
+                <div style={{ fontSize: '2rem' }}>🖥️</div>
+              )}
             </div>
-
-            {formData.image && (
-              <div className="preview">
-                <p>Превью:</p>
-                <img src={formData.image} alt="preview" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+            <h3>{job.name}</h3>
+            {job.description && <p>{job.description}</p>}
+            {isAdmin && (
+              <div className="card-actions">
+                <button className="edit-btn" onClick={() => openEditForm(job)}>
+                  Ред.
+                </button>
+                <button className="delete-btn" onClick={() => handleDelete(job.id)}>
+                  Удал.
+                </button>
               </div>
             )}
+          </div>
+        ))}
+      </div>
 
-            <div className="form-buttons">
-              <button type="submit">Сохранить</button>
-              <button type="button" onClick={resetForm}>Отмена</button>
-            </div>
-          </form>
-        )}
-
-        <div className="features">
-          {professions.map((job) => (
-            <div
-              key={job.id}
-              className="feature-card"
-              onClick={() => navigate(`/job/${job.id}`)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="feature-image">
-                {/* Используем поле image (или imageUrl, если оно так называется) */}
-                <img src={job.image || 'https://via.placeholder.com/150'} alt={job.name} />
+      {showForm && (
+        <div className="modal-overlay" onClick={closeForm}>
+          <div className="job-form" onClick={(e) => e.stopPropagation()}>
+            <h3>{editingJob ? 'Редактировать профессию' : 'Новая профессия'}</h3>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="Название *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+              <textarea
+                placeholder="Описание"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+              <div className="file-input">
+                <label>Изображение (загрузить файл)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {imagePreview && (
+                  <div className="preview">
+                    <p>Предпросмотр:</p>
+                    <img src={imagePreview} alt="preview" style={{ maxWidth: '100%', maxHeight: '150px' }} />
+                  </div>
+                )}
               </div>
-              <h3>{job.name}</h3>
-              <p>{job.description}</p>
-              <div className="card-actions" onClick={(e) => e.stopPropagation()}>
-                <button className="edit-btn" onClick={(e) => handleEditClick(job, e)}>✏️</button>
-                <button className="delete-btn" onClick={(e) => handleDelete(job.id, e)}>🗑️</button>
+              <div className="form-buttons">
+                <button type="submit">Сохранить</button>
+                <button type="button" onClick={closeForm}>Отмена</button>
               </div>
-            </div>
-          ))}
+            </form>
+          </div>
         </div>
-      </main>
+      )}
     </div>
   );
-}
+};
 
 export default HomePage;
