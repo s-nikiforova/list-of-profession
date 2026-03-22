@@ -1,5 +1,6 @@
 // src/homepage/HomePage.jsx
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchJobs, createJob, updateJob, deleteJob } from '../api/api';
 import { SECRET_KEY } from '../api/constants';
 import './App.css';
@@ -152,6 +153,16 @@ const HomePage = () => {
       <div className="features">
         {jobs.map((job) => (
           <div key={job.id} className="feature-card">
+            <Link 
+            to={`/job/${job.id}`} 
+            style={{ 
+              textDecoration: 'none', 
+              color: 'inherit',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
             <div className="feature-image">
               {job.image ? (
                 <img src={job.image} alt={job.name} />
@@ -161,12 +172,27 @@ const HomePage = () => {
             </div>
             <h3>{job.name}</h3>
             {job.description && <p>{job.description}</p>}
+          </Link>
             {isAdmin && (
               <div className="card-actions">
-                <button className="edit-btn" onClick={() => openEditForm(job)}>
+                <button
+                  className="edit-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openEditForm(job);
+                  }}
+                >
                   Ред.
                 </button>
-                <button className="delete-btn" onClick={() => handleDelete(job.id)}>
+                <button
+                  className="delete-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDelete(job.id);
+                  }}
+                >
                   Удал.
                 </button>
               </div>
