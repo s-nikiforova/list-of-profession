@@ -14,6 +14,9 @@ const HomePage = () => {
   const [editingJob, setEditingJob] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '', image: '' });
   const [imagePreview, setImagePreview] = useState('');
+  
+  // Состояние для пагинации
+  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('isAdmin');
@@ -123,6 +126,10 @@ const HomePage = () => {
     }
   };
 
+  const showMoreJobs = () => {
+    setVisibleCount((prevCount) => prevCount + 5);
+  };
+
   if (loading) return <div className="app-container">Загрузка...</div>;
   if (error) return <div className="app-container">{error}</div>;
 
@@ -151,28 +158,29 @@ const HomePage = () => {
       </div>
 
       <div className="features">
-        {jobs.map((job) => (
+        {/* Добавлен .slice для отображения только нужного количества */}
+        {jobs.slice(0, visibleCount).map((job) => (
           <div key={job.id} className="feature-card">
             <Link 
-            to={`/job/${job.id}`} 
-            style={{ 
-              textDecoration: 'none', 
-              color: 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
-            <div className="feature-image">
-              {job.image ? (
-                <img src={job.image} alt={job.name} />
-              ) : (
-                <div style={{ fontSize: '2rem' }}>🖥️</div>
-              )}
-            </div>
-            <h3>{job.name}</h3>
-            {job.description && <p>{job.description}</p>}
-          </Link>
+              to={`/job/${job.id}`} 
+              style={{ 
+                textDecoration: 'none', 
+                color: 'inherit',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div className="feature-image">
+                {job.image ? (
+                  <img src={job.image} alt={job.name} />
+                ) : (
+                  <div style={{ fontSize: '2rem' }}>🖥️</div>
+                )}
+              </div>
+              <h3>{job.name}</h3>
+              {job.description && <p>{job.description}</p>}
+            </Link>
             {isAdmin && (
               <div className="card-actions">
                 <button
@@ -200,6 +208,15 @@ const HomePage = () => {
           </div>
         ))}
       </div>
+
+      {/* Кнопка теперь ВНЕ цикла map, чтобы не дублироваться */}
+      {visibleCount < jobs.length && (
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
+          <button className="add-button" onClick={showMoreJobs}>
+            Смотреть еще
+          </button>
+        </div>
+      )}
 
       {showForm && (
         <div className="modal-overlay" onClick={closeForm}>
