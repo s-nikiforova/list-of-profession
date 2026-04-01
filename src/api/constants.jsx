@@ -1,2 +1,0 @@
-export const API_BASE = 'https://open-api-eta-one.vercel.app';
-export const SECRET_KEY = 'sdmjk12uo1i3j12u3i21uj31y3wnwk2mk3h123k1j3k13123j123h123jk12viyuj3i78136213541526ubdseewwSSDqj13u21g3SHGADdsan';

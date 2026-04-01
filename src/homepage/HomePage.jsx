@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchJobs, createJob, updateJob, deleteJob } from '../api/api';
-import { SECRET_KEY } from '../api/constants';
 import './App.css';
+
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
 const HomePage = () => {
   const [jobs, setJobs] = useState([]);
