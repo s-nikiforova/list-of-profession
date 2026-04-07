@@ -1,16 +1,39 @@
-# React + Vite
+# List of Professions
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Простое веб-приложение для работы со списком профессий. Проект позволяет просматривать перечень специальностей, использовать поиск и фильтрацию.
 
-Currently, two official plugins are available:
+## 🚀 Особенности
+* 🔍 Удобный просмотр списка профессий.
+* ⚡ Быстрая установка и запуск.
+* 📱 Адаптивный интерфейс для разных устройств.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠 Технологии
+* JavaScript (основная логика)
+* HTML5 / CSS3 (структура и стили)
+* npm (менеджер пакетов)
 
-## React Compiler
+## 📦 Установка и запуск
+Для запуска проекта убедитесь, что у вас установлен Node.js.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Клонируйте репозиторий:
+http: git clone https://github.com/s-nikiforova/list-of-profession.git
+ssh: git clone git@github.com:s-nikiforova/list-of-profession.git
 
-## Expanding the ESLint configuration
+2. Перейдите в папку проекта:
+cd list-of-profession
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Установите все необходимые зависимости:
+npm install
+
+4. Запустите проект в режиме разработки:
+npm run dev
+
+Проект откроется в браузере по адресу: http://localhost:3000
+
+## 📂 Структура проекта
+* src/ — основные файлы и компоненты приложения.
+* public/ — статичные файлы и иконки.
+* package.json — конфигурация проекта и список зависимостей.
+
+---
+## Авторы: Никифорова София, Скородзиевский Андрей, Лысинский Виктор
